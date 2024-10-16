@@ -1,0 +1,1 @@
+semua bahan , gambar , code serta segala aset yang ada di sini tidak lain adalah bahan pembelajaran untuk disempurnakan dimasa yang akan mendatang dan kami patuh dan tunduk pada segala peraturan daei kuasa open source , semoga dengan adanya ini bisa membuat pembelajaran kedepannya lebih baik 
