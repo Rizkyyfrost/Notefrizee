@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harianku</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
+        body {
+            background-image: url('background.jpeg'); /* Ganti dengan URL gambar yang diinginkan */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .phone {
+            width: 100%;
+            max-width: 400px;
+            height: 700px;
+            border-radius: 30px;
+            background-color: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .header span {
+            font-family: 'Montserrat', sans-serif; /* Menggunakan font Montserrat */
+            font-size: 32px; /* Ukuran judul diperbesar */
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #2c3e50;
+            width: 0;
+            animation: typing 2s steps(10) forwards, blink 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #34495e;
+            margin-bottom: 40px; /* Jarak diperbesar */
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .note-card {
+            background-color: #d4f1f4;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            color: #2c3e50; /* Warna teks */
+            word-wrap: break-word;
+        }
+
+        .note-card:hover {
+            background-color: #a3d2e1;
+            transform: scale(1.02);
+        }
+
+        .note-input {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .note-input input {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            padding: 10px;
+            outline: none;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+
+        .editable-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            cursor: text;
+        }
+
+        .editable-title span {
+            padding-right: 5px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="header">
+            <span>Harianku</span>
+        </div>
+
+        <div class="greeting" id="greeting"></div>
+
+        <div class="content" id="noteContainer"></div>
+
+        <div class="note-input">
+            <input type="text" id="noteInput" placeholder="Tulis catatan baru...">
+        </div>
+
+        <div class="footer">2024© RizkyMaulana&team</div>
+    </div>
+
+    <script>
+        const greeting = document.getElementById('greeting');
+        const hour = new Date().getHours();
+
+        // Ucapan berdasarkan waktu
+        if (hour < 12) {
+            greeting.textContent = 'Selamat Pagi';
+        } else if (hour < 18) {
+            greeting.textContent = 'Selamat Siang';
+        } else if (hour < 21) {
+            greeting.textContent = 'Selamat Sore';
+        } else {
+            greeting.textContent = 'Selamat Malam';
+        }
+
+        const noteContainer = document.getElementById('noteContainer');
+        const input = document.getElementById('noteInput');
+
+        // Catatan awal
+        const initialNotes = [
+            { title: "Kegiatan sekarang", content: "Event , Maen game, Jalan jalan" },
+            { title: "To-Do List", content: "Beli sayuran, Buat coding, Kerjain tugas" },
+            { title: "Inspirasi", content: "Anda tidak harus hebat untuk memulai, tapi Anda harus memulai untuk menjadi orang hebat" }
+        ];
+
+        // Memuat catatan dari Local Storage
+        function loadNotes() {
+            const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+            savedNotes.forEach(noteText => addNoteToDOM(noteText));
+            // Tambahkan catatan awal dengan judul
+            initialNotes.forEach(note => addNoteToDOM(note.content, note.title));
+        }
+
+        // Menyimpan catatan ke Local Storage
+        function saveNotes() {
+            const notes = Array.from(noteContainer.children).map(note => note.querySelector('.note-card').textContent);
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        // Menambahkan catatan ke DOM
+        function addNoteToDOM(noteText, title = "Catatan") {
+            const noteWrapper = document.createElement('div');
+            noteWrapper.classList.add('note-wrapper');
+
+            const newTitle = document.createElement('div');
+            newTitle.classList.add('editable-title');
+
+            const titleInput = document.createElement('span');
+            titleInput.contentEditable = 'true';
+            titleInput.textContent = title;
+
+            newTitle.appendChild(titleInput);
+            noteWrapper.appendChild(newTitle);
+
+            const newNote = document.createElement('div');
+            newNote.classList.add('note-card');
+            newNote.setAttribute('contenteditable', 'true');
+            newNote.textContent = noteText;
+
+            // Simpan perubahan catatan otomatis
+            newNote.addEventListener('input', saveNotes);
+            titleInput.addEventListener('input', saveNotes);
+
+            noteWrapper.appendChild(newNote);
+            noteContainer.appendChild(noteWrapper);
+            noteContainer.scrollTop = noteContainer.scrollHeight;
+        }
+
+        // Tambahkan catatan baru saat pengguna mengetik dan tekan Enter
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const noteText = input.value.trim();
+                if (noteText !== '') {
+                    addNoteToDOM(noteText);
+                    saveNotes();
+                    input.value = '';
+                } else {
+                    alert('Catatan tidak boleh kosong!');
+                }
+            }
+        });
+
+        // Memuat catatan saat halaman dibuka
+        loadNotes();
+    </script>
+</body>
+</html>
